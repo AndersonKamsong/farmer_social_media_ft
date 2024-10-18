@@ -97,6 +97,21 @@ class UserService {
 
         return response.json();
     }
+    async getFollowersForUser(userId) {
+        const token = JSON.parse(localStorage.getItem('user')).token;
+        const response = await fetch(`${API_URL}${userId}/followers`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json();
+    }
 
     // Update the user's profile
     async updateUserProfile(userData) {

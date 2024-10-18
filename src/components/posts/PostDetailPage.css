@@ -1,0 +1,15 @@
+.comments-section .card {
+    border-left: 4px solid #007bff;
+}
+
+.comments-section .card-body {
+    padding: 10px;
+}
+
+form textarea {
+    resize: none;
+}
+
+.card-title {
+    font-size: 1.5rem;
+}

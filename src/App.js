@@ -19,6 +19,8 @@ import UserListPage from './components/user/UserListPage';
 import FarmerPostPage from './components/posts/FarmerPostPage';
 import GroupManagementPage from './components/group/GroupManagementPage';
 import GroupDetailPage from './components/group/GroupDetailPage';
+import PostDetailPage from './components/posts/PostDetailPage';
+import UserProfilePage from './components/user/UserProfilePage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,17 +38,23 @@ const router = createBrowserRouter(
             element={
               <FarmerPostPage />
             }
-          ></Route>
+          >
+          </Route>
+          <Route path='/post/:postId'
+            element={
+              <PostDetailPage />
+            }
+          />
           <Route path='/groups'
             element={
               <GroupManagementPage />
             }
           >
             <Route path=':groupId'
-            element={
-              <GroupDetailPage />
-            }
-          />
+              element={
+                <GroupDetailPage />
+              }
+            />
           </Route>
           <Route path='/chat'
             element={
@@ -62,6 +70,11 @@ const router = createBrowserRouter(
           <Route path='/userList'
             element={
               <UserListPage />
+            }
+          />
+          <Route path='/users/:userId'
+            element={
+              <UserProfilePage />
             }
           />
         </Route>

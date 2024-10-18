@@ -181,7 +181,22 @@ class PostService {
 
         return response.json(); // Return list of all posts
     }
+    async getPostsByUserId(userId) {
+        const token = JSON.parse(localStorage.getItem('user')).token; // Assuming you store token in localStorage
+        const response = await fetch(`${API_URL}user/${userId}/posts`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, // Use JWT for authentication
+            },
+        });
 
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json(); // Return list of posts
+    }
     // Get all allowed posts
     async getAllowedPosts() {
         const response = await fetch(`${API_URL}allowed/`, {
@@ -211,7 +226,7 @@ class PostService {
     // Update a post (only accessible by the farmer who created it)
     async updatePost(postId, postData) {
         const token = JSON.parse(localStorage.getItem('user')).token;
-    
+
         // First, update the post with the new data (title, content, etc.)
         const response = await fetch(`${API_URL}${postId}`, {
             method: 'PUT',
@@ -221,20 +236,20 @@ class PostService {
             },
             body: JSON.stringify(postData), // postData includes updated title, content, etc.
         });
-    
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Error: ${response.status} - ${errorData.message}`);
         }
-    
+
         // Get the updated post's ID from the response
         const updatedPost = await response.json();
-    
+
         // Upload the new image (if provided)
         if (postData.image) {
             let formData = new FormData();
             formData.append('images', postData.image); // Assume imageFile is the file to upload
-    
+
             const imageUploadResponse = await fetch(`http://localhost:5000/api/uploadFile/${postId}`, {
                 method: 'POST',
                 headers: {
@@ -242,16 +257,16 @@ class PostService {
                 },
                 body: formData,
             });
-    
+
             if (!imageUploadResponse.ok) {
                 const errorData = await imageUploadResponse.json();
                 throw new Error(`Error: ${imageUploadResponse.status} - ${errorData.message}`);
             }
         }
-    
+
         return updatedPost; // Return the updated post data
     }
-    
+
     // async updatePost(postId, postData) {
     //     const token = JSON.parse(localStorage.getItem('user')).token;
     //     const response = await fetch(`${API_URL}${postId}`, {
@@ -305,6 +320,22 @@ class PostService {
 
         return response.json(); // Return success or post data
     }
+    async disLikePost(postId) {
+        const token = JSON.parse(localStorage.getItem('user')).token;
+        const response = await fetch(`${API_URL}${postId}/dislike`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error: ${response.status} - ${errorData.message}`);
+        }
+
+        return response.json(); // Return success or post data
+    }
 
     // Comment on a post (accessible by all users)
     async commentOnPost(postId, commentData) {
@@ -315,7 +346,7 @@ class PostService {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify({ content: commentData }), // commentData is the content of the comment
+            body: JSON.stringify(commentData), // commentData is the content of the comment
         });
 
         if (!response.ok) {
@@ -329,6 +360,17 @@ class PostService {
     // Get comments for a post (accessible by all users)
     async getCommentsForPost(postId) {
         const response = await fetch(`${API_URL}${postId}/comments`, {
+            method: 'GET',
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json(); // Return the list of comments for the post
+    }
+    async getLikesForPost(postId) {
+        const response = await fetch(`${API_URL}${postId}/likes`, {
             method: 'GET',
         });
 

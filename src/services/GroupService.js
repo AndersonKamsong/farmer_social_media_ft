@@ -55,6 +55,22 @@ class GroupService {
         
         return response.json(); // Return list of groups
     }
+    async getAllUserGroups(userId) {
+        const token = JSON.parse(localStorage.getItem('user')).token;
+        const response = await fetch(`${API_URL}${userId}/groups`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, // Use JWT for authentication
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+        
+        return response.json(); // Return list of groups
+    }
 
     // Get group by ID
     async getGroupById(groupId) {
