@@ -1,0 +1,26 @@
+
+.sidebar {
+    width: 200px;
+    /* Adjust the width as needed */
+    height: 100%;
+    background-color: #f0f0f0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%);
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.main-content {
+    flex: 1;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar.open~.main-content {
+    margin-left: 200px;
+    /* Adjust the margin to match sidebar width */
+}
