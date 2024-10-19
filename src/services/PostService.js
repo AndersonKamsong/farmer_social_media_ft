@@ -58,6 +58,17 @@ class PostService {
 
         return response.json(); // Return list of all posts
     }
+    async getAllPostsAdmin() {
+        const response = await fetch(`${API_URL}`, {
+            method: 'GET',
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json(); // Return list of all posts
+    }
     async getPostsByGroupId(groupId) {
         const response = await fetch(`${API_URL}group/${groupId}`, {
             method: 'GET',
@@ -309,6 +320,28 @@ class PostService {
 
         return response.json(); // Return the list of users who liked the post
     }
+
+    async blockPost(postId) {
+        const response = await fetch(`${API_URL}block/${postId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, // Use JWT for authentication
+            },
+        });
+        return response.json();
+    };
+
+    async reactivatePost(postId) {
+        const response = await fetch(`${API_URL}reactivate/${postId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, // Use JWT for authentication
+            },
+        });
+        return response.json();
+    };
 }
 
 export default new PostService();

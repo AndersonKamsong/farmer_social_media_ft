@@ -24,6 +24,8 @@ import UserProfilePage from './components/user/UserProfilePage';
 import Navbar from './components/navbar/Navbar';
 import GroupListPage from './components/group/GroupListPage';
 import MessageChat from './components/chat/MessageChat';
+import UsersAdminPage from './components/user/UserAdminPage';
+import AdminPostsPage from './components/posts/AdminPostsPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,6 +38,11 @@ const router = createBrowserRouter(
         >
           <Route index
             element={<LandingPage />}
+          />
+          <Route path='/postsList'
+            element={
+              <AdminPostsPage />
+            }
           />
           <Route path='/posts'
             element={
@@ -80,6 +87,11 @@ const router = createBrowserRouter(
               <UserListPage />
             }
           />
+          <Route path='/users'
+          element={
+            <UsersAdminPage />
+          }
+        />
           <Route path='/users/:userId'
             element={
               <UserProfilePage />

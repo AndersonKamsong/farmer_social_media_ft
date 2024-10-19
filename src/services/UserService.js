@@ -215,6 +215,38 @@ class UserService {
 
         return response.json();
     }
+    async blockUser(userId) {
+        const token = JSON.parse(localStorage.getItem('user')).token;
+        const response = await fetch(`${API_URL}block/${userId}`, {
+            method: 'get',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json();
+    };
+
+    async reactivateUser(userId) {
+        const token = JSON.parse(localStorage.getItem('user')).token;
+        const response = await fetch(`${API_URL}reactivate/${userId}`, {
+            method: 'get',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json();
+        // return axios.post(`${API_URL}/reactivate/${userId}`);
+    };
 
     // Get current logged-in user data
     getCurrentUser() {

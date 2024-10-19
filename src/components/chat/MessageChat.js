@@ -1,23 +1,26 @@
 // components/MessageChat.js
 
 import React, { useState, useEffect } from 'react';
-// import MessageService from '../../services/MessageService';
-import ChatService from '../../services/ChatService';
 import { useParams } from 'react-router-dom';
+import ChatService from '../../services/ChatService';
+import { io } from 'socket.io-client'; // Import Socket.io client
 import './ChatRoom.css';
+
 const user = JSON.parse(localStorage.getItem('user')).user;
+const socket = io('http://localhost:5000'); // Adjust URL as needed
 
 const MessageChat = () => {
-    let { userId } = useParams()
+    const { userId } = useParams();
     const [messages, setMessages] = useState([]);
     const [content, setContent] = useState('');
     const [error, setError] = useState(null);
-    const [currentUserId, setCurrentUserId] = useState(null)
+    const [currentUserId, setCurrentUserId] = useState(null);
 
     useEffect(() => {
         if (user) {
-            setCurrentUserId(user.id)
+            setCurrentUserId(user.id);
         }
+
         const fetchMessages = async () => {
             try {
                 const fetchedMessages = await ChatService.getMessagesBetweenUsers(userId);
@@ -28,12 +31,32 @@ const MessageChat = () => {
         };
 
         fetchMessages();
+
+        // Listen for incoming messages
+        socket.on('receiveMessage', (message) => {
+            console.log(message)
+            if (message.receiver_id === currentUserId.toString())
+                setMessages((prevMessages) => [...prevMessages, message]);
+        });
+
+        // Clean up the socket connection on component unmount
+        return () => {
+            socket.off('receiveMessage');
+        };
     }, [userId]);
 
     const handleSendMessage = async () => {
         try {
-            const response = await ChatService.createMessage(userId, content);
-            setMessages((prevMessages) => [...prevMessages, { content, sender_id: currentUserId, receiver_id: userId, sent_at: new Date(), ...response }]); // Update local messages state
+            const messageData = {
+                sender_id: currentUserId,
+                receiver_id: userId,
+                content,
+                sent_at: new Date()
+            };
+
+            await ChatService.createMessage(userId, content); // Send message to backend
+            socket.emit('sendMessage', messageData); // Emit the message to the socket
+            setMessages((prevMessages) => [...prevMessages, { ...messageData }]); // Update local messages state
             setContent(''); // Clear the input field
         } catch (error) {
             setError(error.message);
@@ -47,7 +70,7 @@ const MessageChat = () => {
                     {error && <div className="alert alert-danger">{error}</div>}
                     <div className="message-container">
                         <h3>Chat</h3>
-                        <div className="messages">
+                        <div className="messages" style={{ maxHeight: "350px", overflowY: "auto" }}>
                             {messages.map((message) => (
                                 <div key={message.id} className={`message ${message.sender_id === currentUserId ? 'sent' : 'received'}`}>
                                     <p>{message.content}</p>

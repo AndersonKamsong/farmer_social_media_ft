@@ -196,7 +196,7 @@ const Navbar = () => {
           <br />
           <Outlet />
         </div>
-        <footer className="footer text-center "
+        {/* <footer className="footer text-center "
           style={{
             transition: "margin-left 0.3s ease-in-out",
             // background: "white"
@@ -204,7 +204,7 @@ const Navbar = () => {
         >
           <p>&copy; 2024 EasyArchive. All rights reserved.</p>
           <p className="text-muted">Crafted with care by Anderson Kamsong.</p>
-        </footer>
+        </footer> */}
       </div>
     </>
   );
