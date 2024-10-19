@@ -44,39 +44,43 @@ const ChatRoom = () => {
 
     return (
         <div className="container mt-5">
-            <h2 className="text-center">Chat Room</h2>
+            <div className="row">
+                <div className="col-lg-6 mx-auto">
+                    <h2 className="text-center">Chat Room</h2>
 
-            {loading ? (
-                <div className="text-center">
-                    <div className="spinner-border" role="status">
-                        <span className="sr-only">Loading messages...</span>
+                    {loading ? (
+                        <div className="text-center">
+                            <div className="spinner-border" role="status">
+                                <span className="sr-only">Loading messages...</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="chat-messages" style={{ maxHeight: '400px', overflowY: 'scroll', border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
+                            {messages.length > 0 ? (
+                                messages.map((message) => (
+                                    <div key={message.id} className={`message ${message.sender_id === currentUser.id ? 'sent' : 'received'}`}>
+                                        <strong>{message.sender_id === currentUser.id ? 'You' : message.sender_name}:</strong>
+                                        <p>{message.content}</p>
+                                        <small>{new Date(message.timestamp).toLocaleTimeString()}</small>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No messages yet.</p>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="input-group">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Type your message..."
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                        />
+                        <button className="btn btn-primary" onClick={handleSendMessage}>Send</button>
                     </div>
                 </div>
-            ) : (
-                <div className="chat-messages" style={{ maxHeight: '400px', overflowY: 'scroll', border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
-                    {messages.length > 0 ? (
-                        messages.map((message) => (
-                            <div key={message.id} className={`message ${message.sender_id === currentUser.id ? 'sent' : 'received'}`}>
-                                <strong>{message.sender_id === currentUser.id ? 'You' : message.sender_name}:</strong>
-                                <p>{message.content}</p>
-                                <small>{new Date(message.timestamp).toLocaleTimeString()}</small>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No messages yet.</p>
-                    )}
-                </div>
-            )}
-
-            <div className="input-group">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Type your message..."
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                />
-                <button className="btn btn-primary" onClick={handleSendMessage}>Send</button>
             </div>
         </div>
     );

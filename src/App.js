@@ -21,6 +21,9 @@ import GroupManagementPage from './components/group/GroupManagementPage';
 import GroupDetailPage from './components/group/GroupDetailPage';
 import PostDetailPage from './components/posts/PostDetailPage';
 import UserProfilePage from './components/user/UserProfilePage';
+import Navbar from './components/navbar/Navbar';
+import GroupListPage from './components/group/GroupListPage';
+import MessageChat from './components/chat/MessageChat';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,7 +32,7 @@ const router = createBrowserRouter(
         element={<Root />}
       >
         <Route path="/"
-          element={<Header />}
+          element={<Navbar />}
         >
           <Route index
             element={<LandingPage />}
@@ -43,6 +46,11 @@ const router = createBrowserRouter(
           <Route path='/post/:postId'
             element={
               <PostDetailPage />
+            }
+          />
+          <Route path='/groupList'
+            element={
+              <GroupListPage />
             }
           />
           <Route path='/groups'
@@ -61,9 +69,9 @@ const router = createBrowserRouter(
               <ChatPage />
             }
           >
-            <Route path=':chatRoomId'
+            <Route path=':userId'
               element={
-                <ChatRoom />
+                <MessageChat />
               }
             />
           </Route>

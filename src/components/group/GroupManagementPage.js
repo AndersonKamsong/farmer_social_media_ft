@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import GroupService from '../../services/GroupService';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const GroupManagementPage = () => {
+    const navigate = useNavigate()
     const [groups, setGroups] = useState([]);
     const [groupName, setGroupName] = useState('');
     const [groupDescription, setGroupDescription] = useState('');
@@ -64,57 +65,63 @@ const GroupManagementPage = () => {
         <div className="container mt-5">
             {["/groups/", "/groups"].includes(window.location.pathname) ? (
                 <>
-                    <h1 className="text-center mb-4">Group Management</h1>
-                    {error && <p className="text-danger text-center">{error}</p>}
-                    <form className="mb-4" onSubmit={handleGroupSubmit}>
-                        <div className="mb-3">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Group Name"
-                                value={groupName}
-                                onChange={(e) => setGroupName(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <textarea
-                                className="form-control"
-                                placeholder="Group Description"
-                                value={groupDescription}
-                                onChange={(e) => setGroupDescription(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="btn btn-primary">
-                            {editingGroupId ? 'Update Group' : 'Create Group'}
-                        </button>
-                        {editingGroupId && (
-                            <button type="button" className="btn btn-secondary ms-2" onClick={() => setEditingGroupId(null)}>
-                                Cancel
-                            </button>
-                        )}
-                    </form>
-                    <h2>Your Groups</h2>
-                    <ul className="list-group">
-                        {groups.map((group) => (
-                            <li className="list-group-item d-flex justify-content-between align-items-center" key={group.id}>
-                                <div>
-                                    <strong>{group.name}</strong>
-                                    <p className="mb-0">{group.description}</p>
+                    <div className="row">
+                        <div className="col-lg-6 mx-auto">
+                            <h1 className="text-center mb-4">Group Management</h1>
+                            {error && <p className="text-danger text-center">{error}</p>}
+                            <form className="mb-4" onSubmit={handleGroupSubmit}>
+                                <div className="mb-3">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Group Name"
+                                        value={groupName}
+                                        onChange={(e) => setGroupName(e.target.value)}
+                                        required
+                                    />
                                 </div>
-                                <div>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditGroup(group)}>Edit</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDeleteGroup(group.id)}>Delete</button>
+                                <div className="mb-3">
+                                    <textarea
+                                        className="form-control"
+                                        placeholder="Group Description"
+                                        value={groupDescription}
+                                        onChange={(e) => setGroupDescription(e.target.value)}
+                                        required
+                                    />
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
+                                <button type="submit" className="btn btn-primary">
+                                    {editingGroupId ? 'Update Group' : 'Create Group'}
+                                </button>
+                                {editingGroupId && (
+                                    <button type="button" className="btn btn-secondary ms-2" onClick={() => setEditingGroupId(null)}>
+                                        Cancel
+                                    </button>
+                                )}
+                            </form>
+                            <h2>Your Groups</h2>
+                            <ul className="list-group">
+                                {groups.map((group) => (
+                                    <li className="list-group-item d-flex justify-content-between align-items-center" key={group.id}>
+                                        <div>
+                                            <strong>{group.name}</strong>
+                                            <p className="mb-0">{group.description}</p>
+                                        </div>
+                                        <div>
+                                            <button onClick={() => navigate(`/groups/${group.id}`)} className="btn btn-info btn-sm me-2">View Group</button>
+                                            <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditGroup(group)}>Edit</button>
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDeleteGroup(group.id)}>Delete</button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
                 </>
             ) : (
                 <Outlet />
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 

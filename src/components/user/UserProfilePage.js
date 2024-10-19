@@ -3,9 +3,19 @@ import { useParams } from 'react-router-dom';
 import UserService from '../../services/UserService';
 import PostService from '../../services/PostService';
 import GroupService from '../../services/GroupService';
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { Link, useNavigate } from "react-router-dom";
+import moment from "moment";
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import './UserProfilePage.css'; // Custom CSS for profile page
 const connectedUser = JSON.parse(localStorage.getItem('user')).user;
 
 const UserProfilePage = () => {
+    const navigate = useNavigate()
     const { userId } = useParams();
     const [user, setUser] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -13,15 +23,12 @@ const UserProfilePage = () => {
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [followers, setFollowers] = useState([]);
     const [currentUserId, setCurrentUserId] = useState(null)
-    const [followers, setFollowers] = useState([]); // State to hold followers
 
-    // const currentUserId = JSON.parse(localStorage.getItem('user'))?.id || null;
-
-    // Fetch user details, posts, and groups
     useEffect(() => {
-        if (connectedUser) {
-            setCurrentUserId(connectedUser.id)
+        if (user) {
+            setCurrentUserId(user.id)
         }
         const fetchUserData = async () => {
             try {
@@ -34,10 +41,7 @@ const UserProfilePage = () => {
                 setPosts(postsResponse);
                 setGroups(groupsResponse);
                 setFollowers(followersResponse);
-                if (connectedUser) {
-                    setIsFollowing(userResponse.followers.includes(connectedUser.id)); // Assuming this is a boolean returned from the user service
-                    // setCurrentUserId(connectedUser.id)
-                }
+                setIsFollowing(userResponse.followers.includes(connectedUser.id));
                 setLoading(false);
             } catch (error) {
                 setError('Error fetching user profile');
@@ -48,7 +52,6 @@ const UserProfilePage = () => {
         fetchUserData();
     }, [userId]);
 
-    // Handle follow/unfollow action
     const handleFollowToggle = async () => {
         try {
             if (isFollowing) {
@@ -56,7 +59,7 @@ const UserProfilePage = () => {
             } else {
                 await UserService.followFarmer(userId);
             }
-            setIsFollowing(!isFollowing); // Toggle the follow state
+            setIsFollowing(!isFollowing);
         } catch (error) {
             setError('Error updating follow status');
         }
@@ -64,12 +67,11 @@ const UserProfilePage = () => {
 
     const handleLikeToggle = async (postId, likedByUsers) => {
         try {
-            if (likedByUsers.includes(currentUserId)) {
+            if (likedByUsers.includes(connectedUser.id)) {
                 await PostService.disLikePost(postId);
             } else {
                 await PostService.likePost(postId);
             }
-            // Refresh posts after like/unlike action
             const updatedPosts = await PostService.getPostsByUserId(userId);
             setPosts(updatedPosts);
         } catch (error) {
@@ -81,116 +83,175 @@ const UserProfilePage = () => {
     if (error) return <div className="alert alert-danger">{error}</div>;
 
     return (
-        <div className="container mt-5">
+        <div className="container-fluid mt-5">
             <div className="row">
-                <div className="col-lg-12 mx-auto">
-                    {/* User Profile Card */}
-                    <div className="card shadow-sm mb-4">
-                        <div className="card-body text-center">
-                            <h1 className="card-title">{user?.name}</h1>
-                            <p className="text-muted">{user?.email}</p>
+                {/* Left Sidebar/Navbar */}
+                <div className="col-lg-1 sidebar bg-light p-3">
+                    {/* <h4>Navigation</h4>
+                    <ul className="nav flex-column">
+                        <li className="nav-item">
+                            <a className="nav-link" href="/profile">Profile</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" href="/groups">Groups</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" href="/notifications">Notifications</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" href="/settings">Settings</a>
+                        </li>
+                    </ul> */}
+                </div>
+
+                {/* Main Content */}
+                <div className="col-lg-9 offset-lg-2">
+                    {/* Profile Header */}
+                    <div className="card profile-header shadow-sm mb-4">
+                        <div className="card-body text-center position-relative">
+                            <img
+                                src={`http://localhost:5000/images/${user?.cover_image}`}
+                                className="img-fluid cover-image"
+                                alt="Cover"
+                            />
+                            <div className="profile-pic-container">
+                                <img
+                                    src={`http://localhost:5000/images/${user?.profile_image}`}
+                                    alt={user?.name}
+                                    className="profile-pic rounded-circle"
+                                />
+                            </div>
+                            <h1 className="card-title mt-3">{user?.name}</h1>
                             <p className="text-muted">{user?.bio}</p>
                             <button
-                                className={`btn ${isFollowing ? 'btn-danger' : 'btn-primary'}`}
+                                className={`btn ${isFollowing ? 'btn-danger' : 'btn-primary'} mt-2`}
                                 onClick={handleFollowToggle}
                             >
                                 {isFollowing ? 'Unfollow' : 'Follow'}
                             </button>
                         </div>
                     </div>
+                    <div className='row'>
+                        <div className="col-4">
+                            {/* Followers Section */}
+                            <div className="card shadow-sm mb-4">
+                                <div className="card-body">
+                                    <h4 className="card-title">Followers</h4>
+                                    <ul className="list-group">
+                                        {followers.length > 0 ? (
+                                            followers.map((follower) => (
+                                                <li key={follower.id} className="list-group-item">
+                                                    <a href={`/users/${follower.user_id}`} className="text-decoration-none">
+                                                        {follower.user_name}
+                                                    </a>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <p>No followers yet.</p>
+                                        )}
+                                    </ul>
+                                </div>
+                            </div>
 
-                    {/* Followers Section */}
-                    <div className="card shadow-sm mb-4">
-                        <div className="card-body">
-                            <h4 className="card-title">Followers</h4>
-                            <ul className="list-group">
-                                {followers.length > 0 ? (
-                                    followers.map((follower) => (
-                                        <li key={follower.id} className="list-group-item">
-                                            <a href={`/users/${follower.user_id}`} className="text-decoration-none">
-                                                {follower.user_name}
-                                            </a>
-                                        </li>
-                                    ))
-                                ) : (
-                                    <p>No followers yet.</p>
-                                )}
-                            </ul>
+                            {/* User's Groups */}
+                            <div className="card shadow-sm mb-4">
+                                <div className="card-body">
+                                    <h4 className="card-title">Groups</h4>
+                                    <ul className="list-group">
+                                        {groups.length > 0 ? (
+                                            groups.map((group) => (
+                                                <li key={group.id} className="list-group-item">
+                                                    <a href={`/groups/${group.id}`} className="text-decoration-none">
+                                                        {group.name}
+                                                    </a>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            <p>No groups joined yet.</p>
+                                        )}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div className="col-8">
+                            {/* User's Posts */}
+                            <div className="card shadow-sm mb-4">
+                                <div className="card-body">
+                                    <h3 className="card-title">Posts</h3>
+                                    <div className="row">
+                                        {posts.length > 0 ? (
+                                            posts.map((post) => (
+                                                <>
+                                                    <div className="card shadow-sm mb-4">
 
-                    {/* User's Groups */}
-                    <div className="card shadow-sm mb-4">
-                        <div className="card-body">
-                            <h4 className="card-title">Groups</h4>
-                            <ul className="list-group">
-                                {groups.length > 0 ? (
-                                    groups.map((group) => (
-                                        <li key={group.id} className="list-group-item">
-                                            <a href={`/groups/${group.id}`} className="text-decoration-none">
-                                                {group.name}
-                                            </a>
-                                        </li>
-                                    ))
-                                ) : (
-                                    <p>No groups joined yet.</p>
-                                )}
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* User's Posts */}
-                    <div className="card shadow-sm">
-                        <div className="card-body">
-                            <h3 className="card-title">Posts</h3>
-                            <div className="row">
-                                {posts.length > 0 ? (
-                                    posts.map((post) => (
-                                        <div className="col-md-4" key={post.id}>
-                                            <div className="card mb-4">
-                                                <img
-                                                    src={`http://localhost:5000/images/${post.id}`}
-                                                    className="card-img-top"
-                                                    alt={post.title}
-                                                    style={{ height: '200px', objectFit: 'cover' }}  // Fixed height for the image
-                                                />
-                                                <div className="card-body">
-                                                    <h5 className="card-title">{post.title}</h5>
-                                                    <hr />
-                                                    <p className="card-text" style={{ maxHeight: '50px', overflow: 'hidden' }}>
-                                                        {post.content.slice(0, 200)}...
-                                                    </p>
-                                                    <hr />
-                                                    <p className="text-muted">
-                                                        By <a href={`/users/${post.farmer_id}`} className="text-decoration-none">{post.farmer_name}</a>
-                                                    </p>
-                                                    <p>{new Date(post.created_at).toLocaleDateString()}</p>
-                                                    <div className="d-flex justify-content-between">
-                                                        <span>{post.total_likes} Likes</span>
-                                                        <div>
-                                                            <button
-                                                                className={`btn ${post.liked_by_users.includes(currentUserId) ? 'btn-danger' : 'btn-outline-success'} mr-2`}
-                                                                onClick={() => handleLikeToggle(post.id, post.liked_by_users)}
-                                                            >
-                                                                {post.liked_by_users.includes(currentUserId) ? 'Dislike' : 'Like'}
-                                                            </button>
-                                                            <a href={`/post/${post.id}`} className="btn btn-primary">
-                                                                View Post
-                                                            </a>
+                                                        <div className="card-body">
+                                                            <div className="post">
+                                                                <div className="container">
+                                                                    <div className="user">
+                                                                        <div className="userInfo">
+                                                                            <img src={`http://localhost:5000/images/${post.id}`}
+                                                                                alt="" width={40} />
+                                                                            <div className="details">
+                                                                                <Link
+                                                                                    // to={`/profile/${post.userId}`}
+                                                                                    style={{ textDecoration: "none", color: "inherit" }}
+                                                                                >
+                                                                                    <span className="name">{post.title}</span>
+                                                                                </Link>
+                                                                                <span className="date">{moment(post.created_at).fromNow()}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        {/* <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} />
+                                        {menuOpen && post.userId === currentUser.id && (
+                                            <button onClick={handleDelete}>delete</button>
+                                        )} */}
+                                                                    </div>
+                                                                    <hr />
+                                                                    <div className="content">
+                                                                        <p>{post.content}</p>
+                                                                        <img src={`http://localhost:5000/images/${post.id}`} alt="" style={{ width: "100%" }} />
+                                                                    </div>
+                                                                    <hr />
+                                                                    <div className="info d-flex justify-content-around" >
+                                                                        <div className="item">
+                                                                            {post.liked_by_users.includes(currentUserId) ? (
+                                                                                <FavoriteOutlinedIcon
+                                                                                    style={{ color: "red" }}
+                                                                                    onClick={() => handleLikeToggle(post.id, post.liked_by_users)}
+                                                                                />
+                                                                            ) : (
+                                                                                <FavoriteBorderOutlinedIcon
+                                                                                    onClick={() => handleLikeToggle(post.id, post.liked_by_users)} />
+                                                                            )}
+                                                                            {post.total_likes} Likes
+                                                                        </div>
+                                                                        <div className="item" onClick={() => navigate(`/post/${post.id}`)}>
+                                                                            <TextsmsOutlinedIcon />
+                                                                            See Comments
+                                                                        </div>
+                                                                        <div className="item">
+                                                                            <ShareOutlinedIcon />
+                                                                            Share
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                    {/* <br /> */}
+                                                </>
+                                            ))
+                                        ) : (
+                                            <div className="col-12">
+                                                <h3>No posts available.</h3>
                                             </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="col-12">
-                                        <h3>No posts available.</h3>
+                                        )}
                                     </div>
-                                )}
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

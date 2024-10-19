@@ -1,20 +1,15 @@
-/* In your CSS file */
-.chat-messages {
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
 .message {
-    margin-bottom: 10px;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
 }
 
 .sent {
+    background-color: #d1e7dd; /* Light green */
     text-align: right;
 }
 
 .received {
+    background-color: #f8d7da; /* Light red */
     text-align: left;
 }

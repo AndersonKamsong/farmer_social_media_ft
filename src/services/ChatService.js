@@ -1,72 +1,49 @@
-import { currentUser } from "../components/common/Header";
+// services/MessageService.js
 
-const API_URL = 'http://127.0.0.1:8000/chat/';
+const API_URL = 'http://localhost:5000/messages/'; // Adjust according to your backend API URL
+const token = JSON.parse(localStorage.getItem('user')).token;
 
-class ChatService {
-    // Create or get a chat room
-    async getOrCreateChatRoom(userId) {
-        const response = await fetch(`${API_URL}room/`, {
+
+const getMessagesBetweenUsers = async (userId) => {
+    try {
+        const response = await fetch(`${API_URL}${userId}`,{
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, 
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch messages');
+        }
+        return await response.json(); // Return the messages
+    } catch (error) {
+        throw new Error('Error fetching messages: ' + error.message);
+    }
+};
+
+const createMessage = async (receiverId, content) => {
+    try {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`, 
             },
             body: JSON.stringify({
-                user1_id: currentUser.id,
-                user2_id: userId,
+                receiverId,
+                content,
             }),
         });
-
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Error: ${response.status} - ${errorData.message}`);
+            throw new Error('Failed to send message');
         }
-        return response.json();  // Return the created or retrieved chat room data
+        return await response.json(); // Return the response from the server
+    } catch (error) {
+        throw new Error('Error sending message: ' + error.message);
     }
+};
 
-    // Send a message to a chat room
-    async sendMessage(chatRoomId, senderId, content) {
-        const response = await fetch(`${API_URL}message/send/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chat_room_id: chatRoomId,
-                sender_id: senderId,
-                content: content,
-            }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Error: ${response.status} - ${errorData.message}`);
-        }
-        return response.json();  // Return the sent message data
-    }
-
-    // Get all messages in a chat room
-    async getMessages(chatRoomId) {
-        const response = await fetch(`${API_URL}messages/${chatRoomId}/`, {
-            method: 'GET',
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
-        }
-        return response.json();  // Return the messages in the chat room
-    }
-    async getUserChatRooms(userId) {
-        const response = await fetch(`${API_URL}user/${userId}/chat_rooms/`, {
-            method: 'GET',
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Error: ${response.status} - ${errorData.message}`);
-        }
-        return response.json();  // Return the chat rooms for the user
-    }
-}
-
-export default new ChatService();
-
+export default {
+    getMessagesBetweenUsers,
+    createMessage,
+};

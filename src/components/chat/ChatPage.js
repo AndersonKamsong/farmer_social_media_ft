@@ -57,9 +57,11 @@ const ChatPage = () => {
         <div className="container mt-5">
             {["/chat/", "/chat"].includes(window.location.pathname) ? (
                 <>
-                    {/* <h2 className="text-center">Your Chats</h2> */}
+                    <div className="row">
+                        <div className="col-lg-6 mx-auto">
+                            {/* <h2 className="text-center">Your Chats</h2> */}
 
-                    {/* {loadingChats ? (
+                            {/* {loadingChats ? (
                         <div className="text-center">
                             <div className="spinner-border" role="status">
                                 <span className="sr-only">Loading chats...</span>
@@ -85,31 +87,33 @@ const ChatPage = () => {
                         </div>
                     )} */}
 
-                    <h2 className="text-center">Start a New Chat</h2>
+                            <h2 className="text-center">Start a New Chat</h2>
 
-                    {loadingUsers ? (
-                        <div className="text-center">
-                            <div className="spinner-border" role="status">
-                                <span className="sr-only">Loading users...</span>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="list-group">
-                            {users.length > 0 ? (
-                                users.map(user => (
-                                    <div
-                                        key={user.id}
-                                        className="list-group-item list-group-item-action"
-                                        onClick={() => handleChatClick(user.id)}
-                                    >
-                                        {user.full_name} ({user.email})
+                            {loadingUsers ? (
+                                <div className="text-center">
+                                    <div className="spinner-border" role="status">
+                                        <span className="sr-only">Loading users...</span>
                                     </div>
-                                ))
+                                </div>
                             ) : (
-                                <p>No users found.</p>
+                                <div className="list-group">
+                                    {users.length > 0 ? (
+                                        users.map(user => (
+                                            <div
+                                                key={user.id}
+                                                className="list-group-item list-group-item-action"
+                                                onClick={() => handleChatClick(user.id)}
+                                            >
+                                                {user.full_name} ({user.email})
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No users found.</p>
+                                    )}
+                                </div>
                             )}
                         </div>
-                    )}
+                    </div>
                 </>
             ) : (
                 <Outlet />

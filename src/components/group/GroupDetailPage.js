@@ -3,11 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import GroupService from '../../services/GroupService';
 import PostService from '../../services/PostService';
 import GroupMembershipService from '../../services/GroupMembershipService';
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { Link } from "react-router-dom";
+import moment from "moment";
 // const token = JSON.parse(localStorage.getItem('user')).token;
 const connecteduserId = JSON.parse(localStorage.getItem('user')).id;
+const user = JSON.parse(localStorage.getItem('user')).user;
+
 const GroupDetailPage = () => {
     const { groupId } = useParams();
     const navigate = useNavigate();
+    const [currentUserId, setCurrentUserId] = useState(null)
 
     const [group, setGroup] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -28,7 +38,36 @@ const GroupDetailPage = () => {
             setError(err.message);
         }
     };
+    const handleLikeToggle = async (postId, likedByUsers) => {
+        const likedUsers = likedByUsers.split(',').map(userId => parseInt(userId.trim()));
+        const isLiked = likedUsers.includes(currentUserId);
 
+        try {
+            if (isLiked) {
+                // If already liked, call dislike API
+                await PostService.disLikePost(postId);
+                setPosts(prevPosts =>
+                    prevPosts.map(post =>
+                        post.id === postId
+                            ? { ...post, total_likes: post.total_likes - 1, liked_by_users: likedByUsers.replace(`${currentUserId}`, '') }
+                            : post
+                    )
+                );
+            } else {
+                // If not liked, call like API
+                await PostService.likePost(postId);
+                setPosts(prevPosts =>
+                    prevPosts.map(post =>
+                        post.id === postId
+                            ? { ...post, total_likes: post.total_likes + 1, liked_by_users: likedByUsers ? `${likedByUsers},${currentUserId}` : `${currentUserId}` }
+                            : post
+                    )
+                );
+            }
+        } catch (error) {
+            console.error('Error liking/disliking post:', error);
+        }
+    };
     // Fetch posts related to the group
     const fetchGroupPosts = async () => {
         try {
@@ -98,6 +137,9 @@ const GroupDetailPage = () => {
     };
     // console.log(connectedUserGroupInfo);
     useEffect(() => {
+        if (user) {
+            setCurrentUserId(user.id)
+        }
         fetchGroupDetails();
         fetchGroupPosts();
     }, [groupId]);
@@ -106,89 +148,127 @@ const GroupDetailPage = () => {
         <div className="container mt-5">
             {error && <p className="text-danger">{error}</p>}
             {group ? (
-                <div className="card mb-4">
-                    <div className="card-header">
-                        <h1>{group.name}</h1>
-                        <p className="text-muted">{group.description}</p>
-                    </div>
-                    <div className="card-body">
-                        <h3>Members</h3>
-                        <ul className="list-group mb-4">
-                            {group.members.map(member => (
-                                <li key={member.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>
-                                        {member.name}
-                                        {member.role === 'admin' && (
-                                            <span className="badge bg-success ms-2">Admin</span>
-                                        )}
-                                        {/* {adminId === member.id &&  */}
-                                    </span>
-                                    {adminId && adminId !== member.id && (
+                <div className="row">
+                    <div className="col-lg-6 mx-auto">
+                        <div className="card shadow-sm mb-4">
+                            <div className="card-header">
+                                <h1><b>{group.name}</b></h1>
+                                <p className="text-muted">{group.description}</p>
+                                <div className="mb-4">
+                                    {isMember ? (
                                         <>
-                                            {member.role === 'member' && (
-                                                <button className="btn btn-info btn-sm" onClick={() => handleSetMemberAdmin(member.id, 'admin')}>
-                                                    Put Admin
-                                                </button>
-                                            )}
-                                            {member.role === 'admin' && (
-                                                <button className="btn btn-info btn-sm" onClick={() => handleSetMemberAdmin(member.id, 'member')}>
-                                                    Put Member
-                                                </button>
-                                            )}
-                                            <button className="btn btn-danger btn-sm" onClick={() => handleRemoveMember(member.id)}>
-                                                Remove
-                                            </button>
+                                            <button className="btn btn-warning me-2" onClick={handleLeaveGroup}>Leave Group</button>
+                                            <button className="btn btn-success" onClick={handleCreatePost}>Create Post</button>
                                         </>
+                                    ) : (
+                                        <button className="btn btn-primary" onClick={handleJoinGroup}>Join Group</button>
                                     )}
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="mb-4">
-                            {isMember ? (
-                                <>
-                                    <button className="btn btn-warning me-2" onClick={handleLeaveGroup}>Leave Group</button>
-                                    <button className="btn btn-success" onClick={handleCreatePost}>Create Post</button>
-                                </>
-                            ) : (
-                                <button className="btn btn-primary" onClick={handleJoinGroup}>Join Group</button>
-                            )}
+                                </div>
+                            </div>
+                            <div className="card-body">
+                                <h3><b>Members</b></h3>
+                                <ul className="list-group mb-4">
+                                    {group.members.map(member => (
+                                        <li key={member.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>
+                                                {member.name}
+                                                {member.role === 'admin' && (
+                                                    <span className="badge bg-success ms-2">Admin</span>
+                                                )}
+                                                {/* {adminId === member.id &&  */}
+                                            </span>
+                                            {adminId && adminId !== member.id && (
+                                                <>
+                                                    {member.role === 'member' && (
+                                                        <button className="btn btn-info btn-sm" onClick={() => handleSetMemberAdmin(member.id, 'admin')}>
+                                                            Put Admin
+                                                        </button>
+                                                    )}
+                                                    {member.role === 'admin' && (
+                                                        <button className="btn btn-info btn-sm" onClick={() => handleSetMemberAdmin(member.id, 'member')}>
+                                                            Put Member
+                                                        </button>
+                                                    )}
+                                                    <button className="btn btn-danger btn-sm" onClick={() => handleRemoveMember(member.id)}>
+                                                        Remove
+                                                    </button>
+                                                </>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
 
                         <h3 className="mt-4">Posts</h3>
-                        <div className="row">
-                            {posts.length > 0 ? (
-                                posts.map((post) => (
-                                    <div className="col-md-4" key={post.id}>
-                                        <div className="card mb-4">
-                                            <img
-                                                src={`http://localhost:5000/images/${post.id}`}
-                                                className="card-img-top"
-                                                alt={post.title}
-                                                style={{ height: '200px', objectFit: 'cover' }}  // Fixed height for the image
-                                            />
-                                            <div className="card-body">
-                                                <h5 className="card-title">{post.title}</h5>
-                                                <hr />
-                                                <p className="card-text" style={{ maxHeight: "50px" }}>{post.content.slice(0, 200)}</p>
-                                                <hr />
-                                                <p className="text-muted">By {post.farmer_name}</p>
-                                                <p>{post.created_at}</p>
-                                                <div className="d-flex justify-content-between">
-                                                    <span>{post.like_count} Likes</span>
-                                                    <a href={`/posts/${post.id}`} className="btn btn-primary">
-                                                        View Post
-                                                    </a>
+                        {/* <div className="row"> */}
+                        {posts.length > 0 ? (
+                            posts.map((post) => (
+                                <>
+                                    <div className="card shadow-sm mb-4">
+                                        <div className="card-body">
+                                            <div className="post">
+                                                <div className="container">
+                                                    <div className="user">
+                                                        <div className="userInfo">
+                                                            <img src={`http://localhost:5000/images/${post.id}`}
+                                                                alt="" width={40} />
+                                                            <div className="details">
+                                                                <Link
+                                                                    // to={`/profile/${post.userId}`}
+                                                                    style={{ textDecoration: "none", color: "inherit" }}
+                                                                >
+                                                                    <span className="name">{post.title}</span>
+                                                                </Link>
+                                                                <span className="date">{moment(post.created_at).fromNow()}</span>
+                                                            </div>
+                                                        </div>
+                                                        {/* <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} />
+                                        {menuOpen && post.userId === currentUser.id && (
+                                            <button onClick={handleDelete}>delete</button>
+                                        )} */}
+                                                    </div>
+                                                    <hr />
+                                                    <div className="content">
+                                                        <p>{post.content}</p>
+                                                        <img src={`http://localhost:5000/images/${post.id}`} alt="" style={{ width: "100%" }} />
+                                                    </div>
+                                                    <hr />
+                                                    <div className="info d-flex justify-content-around" >
+                                                        <div className="item">
+                                                            {post.liked_by_users.includes(currentUserId) ? (
+                                                                <FavoriteOutlinedIcon
+                                                                    style={{ color: "red" }}
+                                                                    onClick={() => handleLikeToggle(post.id, post.liked_by_users)}
+                                                                />
+                                                            ) : (
+                                                                <FavoriteBorderOutlinedIcon
+                                                                    onClick={() => handleLikeToggle(post.id, post.liked_by_users)} />
+                                                            )}
+                                                            {post.total_likes} Likes
+                                                        </div>
+                                                        <div className="item" onClick={() => navigate(`/post/${post.id}`)}>
+                                                            <TextsmsOutlinedIcon />
+                                                            See Comments
+                                                        </div>
+                                                        <div className="item">
+                                                            <ShareOutlinedIcon />
+                                                            Share
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                ))
-                            ) : (
-                                <div className="col-12">
-                                    <h3>No posts available.</h3>
-                                </div>
-                            )}
-                        </div>
+                                    {/* <br /> */}
+                                </>
+                            ))
+                        ) : (
+                            <div className="col-12">
+                                <h3>No posts available.</h3>
+                            </div>
+                        )}
+                        {/* </div> */}
                     </div>
                 </div>
             ) : (
