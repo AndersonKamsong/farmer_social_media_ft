@@ -1,7 +1,7 @@
 // services/MessageService.js
 
 const API_URL = 'http://localhost:5000/messages/'; // Adjust according to your backend API URL
-const token = JSON.parse(localStorage.getItem('user')).token;
+const token = JSON.parse(localStorage.getItem('user'))?.token;
 
 
 const getMessagesBetweenUsers = async (userId) => {

@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import './UserProfilePage.css'; // Custom CSS for profile page
-const connectedUser = JSON.parse(localStorage.getItem('user')).user;
+const connectedUser = JSON.parse(localStorage.getItem('user'))?.user;
 
 const UserProfilePage = () => {
     const navigate = useNavigate()

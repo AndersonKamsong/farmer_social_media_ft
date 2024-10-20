@@ -7,7 +7,7 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
-const user = JSON.parse(localStorage.getItem('user')).user;
+const user = JSON.parse(localStorage.getItem('user'))?.user;
 
 const LandingPage = () => {
     const navigate = useNavigate()
@@ -43,8 +43,11 @@ const LandingPage = () => {
     }
     // Handle liking or disliking a post
     const handleLikeToggle = async (postId, likedByUsers) => {
-        const likedUsers = likedByUsers.split(',').map(userId => parseInt(userId.trim()));
-        const isLiked = likedUsers.includes(currentUserId);
+        let isLiked = false
+        if (likedByUsers) {
+            const likedUsers = likedByUsers.split(',').map(userId => parseInt(userId.trim()));
+            isLiked = likedUsers.includes(currentUserId);
+        }
 
         try {
             if (isLiked) {
@@ -141,7 +144,8 @@ const LandingPage = () => {
                                                             >
                                                                 <span className="name">{post.title}</span>
                                                             </Link>
-                                                            <span className="date">{moment(post.created_at).fromNow()}</span>
+
+                                                            <span className="date pull-right">{moment(post.created_at).fromNow()}</span>
                                                         </div>
                                                     </div>
                                                     {/* <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} />
@@ -157,7 +161,7 @@ const LandingPage = () => {
                                                 <hr />
                                                 <div className="info d-flex justify-content-around" >
                                                     <div className="item">
-                                                        {post.liked_by_users.includes(currentUserId) ? (
+                                                        {post.liked_by_users?.includes(currentUserId) ? (
                                                             <FavoriteOutlinedIcon
                                                                 style={{ color: "red" }}
                                                                 onClick={() => handleLikeToggle(post.id, post.liked_by_users)}

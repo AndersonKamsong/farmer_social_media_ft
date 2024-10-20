@@ -18,8 +18,28 @@ class GroupService {
             const errorData = await response.json();
             throw new Error(`Error: ${response.status} - ${errorData.message}`);
         }
+        const createdGroup = await response.json();
+
+        if (groupData.image) {
+            console.log(groupData);
+            let formData = new FormData();
+            formData.append('images', groupData.image); // Assume imageFile is the file to upload
+
+            const imageUploadResponse = await fetch(`http://localhost:5000/api/groupImage/${createdGroup.groupId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Same token for image upload
+                },
+                body: formData,
+            });
+
+            if (!imageUploadResponse.ok) {
+                const errorData = await imageUploadResponse.json();
+                throw new Error(`Error: ${imageUploadResponse.status} - ${errorData.message}`);
+            }
+        }
         
-        return response.json(); // Return created group
+        return createdGroup; // Return created group
     }
 
     // Get all groups
@@ -101,6 +121,24 @@ class GroupService {
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Error: ${response.status} - ${errorData.message}`);
+        }
+        if (groupData.image) {
+            console.log(groupData);
+            let formData = new FormData();
+            formData.append('images', groupData.image); // Assume imageFile is the file to upload
+
+            const imageUploadResponse = await fetch(`http://localhost:5000/api/groupImage/${groupData.groupId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Same token for image upload
+                },
+                body: formData,
+            });
+
+            if (!imageUploadResponse.ok) {
+                const errorData = await imageUploadResponse.json();
+                throw new Error(`Error: ${imageUploadResponse.status} - ${errorData.message}`);
+            }
         }
         
         return response.json(); // Return updated group

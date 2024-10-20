@@ -6,6 +6,7 @@ const GroupManagementPage = () => {
     const navigate = useNavigate()
     const [groups, setGroups] = useState([]);
     const [groupName, setGroupName] = useState('');
+    const [groupImage, setGroupImage] = useState(null);
     const [groupDescription, setGroupDescription] = useState('');
     const [editingGroupId, setEditingGroupId] = useState(null);
     const [error, setError] = useState(null);
@@ -29,9 +30,9 @@ const GroupManagementPage = () => {
         e.preventDefault();
         try {
             if (editingGroupId) {
-                await GroupService.updateGroup(editingGroupId, { name: groupName, description: groupDescription });
+                await GroupService.updateGroup(editingGroupId, { name: groupName, description: groupDescription, image: groupImage });
             } else {
-                await GroupService.createGroup({ name: groupName, description: groupDescription });
+                await GroupService.createGroup({ name: groupName, description: groupDescription, image: groupImage });
             }
             setGroupName('');
             setGroupDescription('');
@@ -88,6 +89,10 @@ const GroupManagementPage = () => {
                                         onChange={(e) => setGroupDescription(e.target.value)}
                                         required
                                     />
+                                </div>
+                                <div className="form-group">
+                                    <label>Image (optional)</label>
+                                    <input type="file" className="form-control" name="image" onChange={(e) => setGroupImage(e.target.files[0])} />
                                 </div>
                                 <button type="submit" className="btn btn-primary">
                                     {editingGroupId ? 'Update Group' : 'Create Group'}

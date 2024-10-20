@@ -6,7 +6,7 @@ import ChatService from '../../services/ChatService';
 import { io } from 'socket.io-client'; // Import Socket.io client
 import './ChatRoom.css';
 
-const user = JSON.parse(localStorage.getItem('user')).user;
+const user = JSON.parse(localStorage.getItem('user'))?.user;
 const socket = io('http://localhost:5000'); // Adjust URL as needed
 
 const MessageChat = () => {

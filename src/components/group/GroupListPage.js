@@ -40,23 +40,28 @@ const GroupListPage = () => {
                 <div className="col-lg-8 mx-auto">
                     <h1 className="text-center mb-4">Groups</h1>
                     <span className='pull-right'>
-                        <button className="btn btn-info" onClick={() => { navigate('/groups')}}>Create Group</button>
+                        <button className="btn btn-info" onClick={() => { navigate('/groups') }}>Create Group</button>
                     </span>
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
                     {/* <hr/> */}
                     <div className="row">
                         {groups.length > 0 ? (
                             groups.map((group) => (
                                 <div className="col-md-6 mb-4" key={group.id}>
-                                    <div className="card shadow-sm h-100">
-                                        <div className="card-body">
-                                            <h5 className="card-title">{group.name}</h5>
-                                            <p className="card-text">
+                                    <div className="card shadow-sm h-100" style={{
+                                        background: "black",
+                                        backgroundImage: `url(http://localhost:5000/group-images/${group.id})`,
+                                        backgroundRepeat: "no-repeat",
+                                        backgroundSize: "cover"
+                                    }}>
+                                        <div className="card-body" style={{ color: "white" }}>
+                                            <h5 className="card-title" style={{ color: "white" }}>{group.name}</h5>
+                                            <p className="card-text" style={{ color: "white" }}>
                                                 {group.description.slice(0, 100)}...
                                             </p>
-                                            <p className="text-muted">
-                                                Members: {group.members_count}
+                                            <p className="text-muted" style={{ color: "white" }}>
+                                                <b style={{ color: "white" }}>Members:</b> {group.members_count}
                                             </p>
                                             <div className="d-flex justify-content-between">
                                                 <Link

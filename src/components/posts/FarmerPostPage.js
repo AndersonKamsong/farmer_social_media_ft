@@ -92,84 +92,89 @@ const FarmerPostPage = () => {
 
     return (
         <div className="container mt-5">
-            <h1 className="text-center">{editingPostId ? 'Update Post' : 'Create New Post'}</h1>
+            <div className="row">
+                <div className="col-lg-8 mx-auto">
 
-            {error && <div className="alert alert-danger">{error}</div>}
+                    <h1 className="text-center">{editingPostId ? 'Update Post' : 'Create New Post'}</h1>
 
-            <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <div className="form-group">
-                    <label>Title</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                    {error && <div className="alert alert-danger">{error}</div>}
 
-                <div className="form-group">
-                    <label>Content</label>
-                    <textarea
-                        className="form-control"
-                        name="content"
-                        value={formData.content}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                    <form onSubmit={handleSubmit} encType="multipart/form-data">
+                        <div className="form-group">
+                            <label>Title</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
 
-                <div className="form-group">
-                    <label>Image (optional)</label>
-                    <input type="file" className="form-control" name="image" onChange={handleChange} />
-                </div>
+                        <div className="form-group">
+                            <label>Content</label>
+                            <textarea
+                                className="form-control"
+                                name="content"
+                                value={formData.content}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
 
-                <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Saving...' : editingPostId ? 'Update Post' : 'Create Post'}
-                </button>
-            </form>
+                        <div className="form-group">
+                            <label>Image (optional)</label>
+                            <input type="file" className="form-control" name="image" onChange={handleChange} />
+                        </div>
 
-            <hr />
+                        <button type="submit" className="btn btn-primary" disabled={loading}>
+                            {loading ? 'Saving...' : editingPostId ? 'Update Post' : 'Create Post'}
+                        </button>
+                    </form>
 
-            <h2>Your Posts</h2>
+                    <hr />
 
-            {posts.length > 0 ? (
-                <div className="row">
-                    {posts.map((post) => (
-                        <div className="col-md-4" key={post.id}>
-                            <div className="card mb-4">
-                                <img
-                                    src={`http://localhost:5000/images/${post.id}`}
-                                    className="card-img-top"
-                                    alt={post.title}
-                                    style={{ height: '200px', objectFit: 'cover' }}  // Fixed height for the image
-                                />
-                                <div className="card-body">
-                                    <h5 className="card-title">{post.title}</h5>
-                                    <p className="card-text">{post.content}</p>
-                                    <div className="d-flex justify-content-between">
-                                        <button
-                                            className="btn btn-warning"
-                                            onClick={() => handleEdit(post)}
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            className="btn btn-danger"
-                                            onClick={() => handleDelete(post.id)}
-                                        >
-                                            Delete
-                                        </button>
+                    <h2>Your Posts</h2>
+
+                    {posts.length > 0 ? (
+                        <div className="row">
+                            {posts.map((post) => (
+                                <div className="col-md-4" key={post.id}>
+                                    <div className="card mb-4">
+                                        <img
+                                            src={`http://localhost:5000/images/${post.id}`}
+                                            className="card-img-top"
+                                            alt={post.title}
+                                            style={{ height: '200px', objectFit: 'cover' }}  // Fixed height for the image
+                                        />
+                                        <div className="card-body">
+                                            <h5 className="card-title">{post.title}</h5>
+                                            <p className="card-text">{post.content}</p>
+                                            <div className="d-flex justify-content-between">
+                                                <button
+                                                    className="btn btn-warning"
+                                                    onClick={() => handleEdit(post)}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={() => handleDelete(post.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            ))}
                         </div>
-                    ))}
+                    ) : (
+                        <h4>No posts found</h4>
+                    )}
                 </div>
-            ) : (
-                <h4>No posts found</h4>
-            )}
+            </div>
         </div>
     );
 };

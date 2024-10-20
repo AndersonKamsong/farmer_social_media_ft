@@ -95,8 +95,20 @@ export default function Login() {
                                             </div>
                                         </div>
                                         <div className="login-social-title">
-                                            <h6></h6>
+                                            <h6>Or log in with </h6>
                                         </div>
+
+                                        <div className="form-group">
+                                            <ul className="login-social">
+                                                <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer"><i className="icon-linkedin"></i></a></li>
+                                                <li><a href="https://twitter.com/" target="_blank" rel="noopener noreferrer"><i className="icon-twitter"></i></a></li>
+                                                <li><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i className="icon-facebook"></i></a></li>
+                                                <li><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"><i className="icon-instagram"></i></a></li>
+                                            </ul>
+                                        </div>
+                                        <p className="mt-4 mb-0 text-center">Create an account?<a className="ms-2" href="/signup">Sign up</a></p>
+                                        <p className="mt-4 mb-0 text-center">Create an account?<a className="ms-2" href="/">go home</a>
+                                        </p>
                                     </form>
                                 </div>
                             </div>

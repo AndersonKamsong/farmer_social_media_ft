@@ -1,5 +1,5 @@
 const API_URL = 'http://localhost:5000/posts/';
-const token = JSON.parse(localStorage.getItem('user')).token;
+const token = JSON.parse(localStorage.getItem('user'))?.token;
 
 class PostService {
     async createPost(postData) {

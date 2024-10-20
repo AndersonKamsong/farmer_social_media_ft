@@ -11,8 +11,8 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Link } from "react-router-dom";
 import moment from "moment";
 // const token = JSON.parse(localStorage.getItem('user')).token;
-const connecteduserId = JSON.parse(localStorage.getItem('user')).id;
-const user = JSON.parse(localStorage.getItem('user')).user;
+const connecteduserId = JSON.parse(localStorage.getItem('user'))?.id;
+const user = JSON.parse(localStorage.getItem('user'))?.user;
 
 const GroupDetailPage = () => {
     const { groupId } = useParams();

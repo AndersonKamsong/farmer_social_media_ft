@@ -19,8 +19,16 @@ import Messages from "./images/10.png";
 import Tutorials from "./images/11.png";
 import Courses from "./images/12.png";
 import Fund from "./images/13.png";
+import { useState } from "react";
 const Navbar = () => {
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+  const logOut = async() => {
+    await localStorage.setItem('user',null)
+    window.location = '/login'
+  }
   return (
     <>
       <header className="page-header row" style={{ position: "fixed" }}>
@@ -40,7 +48,7 @@ const Navbar = () => {
               </li>
               <li className="modes d-flex">
                 <a className="close-btn"
-                // onClick={toggleSidebar}
+                  onClick={toggleSidebar}
                 >
                   <div className="toggle-sidebar">
                     <div className="line"></div>
@@ -83,6 +91,15 @@ const Navbar = () => {
                   <span>{"test"}</span>
                 </div>
               </li>
+              <li className="modes d-flex" onClick={logOut}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="feather feather-log-out">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </li>
             </ul>
           </div>
         </div>
@@ -90,101 +107,97 @@ const Navbar = () => {
       <div className="page-body-wrapper">
         {/* <!-- Page sidebar start--> */}
         <div className="overlay"></div>
+        {isSidebarOpen && (
+          <aside className="page-sidebar" style={{ overflowY: "auto" }} data-sidebar-layout="stroke-svg">
+            <div id="sidebar-menu" >
+              <div className="container">
+                <div className="menu">
+                  <div className="item">
+                    <NavLink to={'/userList'}>
+                      <img src={Friends} alt="" />
+                      <span>Friends</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/groupList'}>
+                      <img src={Groups} alt="" />
+                      <span>Groups</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/posts'}>
+                      <img src={Gallery} alt="" />
+                      <span>Gallery</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Watch} alt="" />
+                      <span>Watch</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Memories} alt="" />
+                      <span>Memories</span>
+                    </NavLink>
+                  </div>
+                </div>
+                <hr />
+                <div className="menu">
+                  <span>Your shortcuts</span>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Events} alt="" />
+                      <span>Events</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Gaming} alt="" />
+                      <span>Gaming</span>
+                    </NavLink>
+                  </div>
 
-        <aside className="page-sidebar" style={{ overflowY: "auto" }} data-sidebar-layout="stroke-svg">
-          <div id="sidebar-menu" >
-            <div className="container">
-              <div className="menu">
-                <div className="item">
-                  <NavLink to={'/userList'}>
-                    <img src={Friends} alt="" />
-                    <span>Friends</span>
-                  </NavLink>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Videos} alt="" />
+                      <span>Videos</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Messages} alt="" />
+                      <span>Messages</span>
+                    </NavLink>
+                  </div>
                 </div>
-                <div className="item">
-                  <NavLink to={'/groupList'}>
-                    <img src={Groups} alt="" />
-                    <span>Groups</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Market} alt="" />
-                    <span>Marketplace</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Watch} alt="" />
-                    <span>Watch</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Memories} alt="" />
-                    <span>Memories</span>
-                  </NavLink>
-                </div>
-              </div>
-              <hr />
-              <div className="menu">
-                <span>Your shortcuts</span>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Events} alt="" />
-                    <span>Events</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Gaming} alt="" />
-                    <span>Gaming</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Gallery} alt="" />
-                    <span>Gallery</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Videos} alt="" />
-                    <span>Videos</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Messages} alt="" />
-                    <span>Messages</span>
-                  </NavLink>
-                </div>
-              </div>
-              <hr />
-              <div className="menu">
-                <span>Others</span>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Fund} alt="" />
-                    <span>Fundraiser</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Tutorials} alt="" />
-                    <span>Tutorials</span>
-                  </NavLink>
-                </div>
-                <div className="item">
-                  <NavLink to={'/'}>
-                    <img src={Courses} alt="" />
-                    <span>Courses</span>
-                  </NavLink>
+                <hr />
+                <div className="menu">
+                  <span>Others</span>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Fund} alt="" />
+                      <span>Fundraiser</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Tutorials} alt="" />
+                      <span>Tutorials</span>
+                    </NavLink>
+                  </div>
+                  <div className="item">
+                    <NavLink to={'/'}>
+                      <img src={Courses} alt="" />
+                      <span>Courses</span>
+                    </NavLink>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        )}
 
         <div className='page-body'
           style={{
